@@ -12,7 +12,7 @@
 
 ## Practical Sets
 
-### [Practical Set-1: Basics of JAVA](SET-01%20(Basics)/README.md) - CO 1
+### [Practical Set-1: Basics of JAVA](set-1%20/README.md) - CO 1
 1. Distance conversion (meters → feet)  
 2. Solve system of 2 linear equations (Cramer's rule)  
 3. Check vowel or consonant  
