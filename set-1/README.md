@@ -1,10 +1,6 @@
 # SET-1 (Basics of JAVA)
 
-## Compilation Guide
-To compile all java files in this set, run:
-```bash
-javac *.java
-```
+---
 
 ## Practical 1: Distance Converter
 Problem Statement:
