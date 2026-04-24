@@ -1,81 +1,109 @@
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
-
+import javax.swing.*;
+import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.IOException;
 
-public class pra34 extends Application {
+public class pra34 extends JFrame {
 
-    public void start(Stage stage) {
+    private final JTextField rollField;
+    private final JTextField nameField;
+    private final JTextField ageField;
+    private final JTextField emailField;
 
-        GridPane grid = new GridPane();
-        grid.setVgap(10);
-        grid.setHgap(10);
+    public pra34() {
+        super("Registration Form");
+        rollField = new JTextField(20);
+        nameField = new JTextField(20);
+        ageField = new JTextField(20);
+        emailField = new JTextField(20);
 
-        TextField roll = new TextField();
-        TextField name = new TextField();
-        TextField age = new TextField();
-        TextField email = new TextField();
+        initUI();
+    }
 
-        Button submit = new Button("Submit");
+    private void initUI() {
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout(10, 10));
 
-        grid.add(new Label("Roll No:"), 0, 0);
-        grid.add(roll, 1, 0);
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        grid.add(new Label("Name:"), 0, 1);
-        grid.add(name, 1, 1);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(new JLabel("Roll No:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(rollField, gbc);
 
-        grid.add(new Label("Age:"), 0, 2);
-        grid.add(age, 1, 2);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        formPanel.add(new JLabel("Name:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(nameField, gbc);
 
-        grid.add(new Label("Email:"), 0, 3);
-        grid.add(email, 1, 3);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        formPanel.add(new JLabel("Age:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(ageField, gbc);
 
-        grid.add(submit, 1, 4);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        formPanel.add(new JLabel("Email:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(emailField, gbc);
 
-        submit.setOnAction(e -> {
-            try {
-                int r = Integer.parseInt(roll.getText());
-                int a = Integer.parseInt(age.getText());
+        JButton submit = new JButton("Submit");
+        submit.addActionListener(e -> onSubmit());
 
-                String em = email.getText();
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.LINE_START;
+        formPanel.add(submit, gbc);
 
-                if (!em.contains("@") || !em.contains(".")) {
-                    throw new Exception("Invalid Email");
-                }
+        add(formPanel, BorderLayout.CENTER);
+        pack();
+        setLocationRelativeTo(null);
+        setResizable(false);
+    }
 
-                BufferedWriter bw = new BufferedWriter(new FileWriter("student.txt"));
-                bw.write(r + " " + name.getText() + " " + a + " " + em);
-                bw.close();
+    private void onSubmit() {
+        try {
+            int roll = Integer.parseInt(rollField.getText().trim());
+            int age = Integer.parseInt(ageField.getText().trim());
+            String name = nameField.getText().trim();
+            String email = emailField.getText().trim();
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setContentText("Registration Successful\nRoll: " + r +
-                        "\nName: " + name.getText() +
-                        "\nAge: " + a +
-                        "\nEmail: " + em);
-                alert.show();
-
-            } catch (NumberFormatException ex) {
-                Alert a = new Alert(Alert.AlertType.ERROR);
-                a.setContentText("Roll No and Age must be integers");
-                a.show();
-            } catch (Exception ex) {
-                Alert a = new Alert(Alert.AlertType.ERROR);
-                a.setContentText(ex.getMessage());
-                a.show();
+            if (!email.contains("@") || !email.contains(".")) {
+                throw new IllegalArgumentException("Invalid Email");
             }
-        });
 
-        Scene scene = new Scene(grid, 400, 250);
-        stage.setTitle("Registration Form");
-        stage.setScene(scene);
-        stage.show();
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter("student.txt"))) {
+                bw.write(roll + " " + name + " " + age + " " + email);
+            }
+
+            JOptionPane.showMessageDialog(this,
+                    "Registration Successful\nRoll: " + roll +
+                            "\nName: " + name +
+                            "\nAge: " + age +
+                            "\nEmail: " + email,
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Roll No and Age must be integers",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        } catch (IOException | IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this,
+                    ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public static void main(String[] args) {
-        launch(args);
+        SwingUtilities.invokeLater(() -> new pra34().setVisible(true));
     }
 }
